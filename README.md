@@ -15,17 +15,11 @@ This repository provides a local reproduction pipeline for FS-CAT. The method
 contains three key components: Adversarial Margin loss, GMM Prototype Replay,
 and Multi-Domain Balanced loss.
 
-```mermaid
-flowchart LR
-    A["Clean pretraining data"] --> B["ResNet-50 backbone"]
-    B --> C["ADM loss enlarges clean margins"]
-    D["Few-shot adversarial domain k"] --> E["Continual fine-tuning"]
-    C --> E
-    F["Past-domain GMM prototypes"] --> G["Pseudo-feature replay"]
-    G --> E
-    E --> H["MDB loss balances replay domains"]
-    H --> I["Robust model after attack sequence"]
-```
+The figures below are screenshots cropped from the FS-CAT paper PDF.
+
+<p align="center">
+  <img src="assets/figures/figure1_performance.png" alt="FS-CAT performance comparison" width="520">
+</p>
 
 ## Method
 
@@ -36,42 +30,20 @@ decision boundary during clean pretraining. It uses the logit margin
 `phi_y(x) = z_y(x) - max_{y' != y} z_y'(x)` and approximates the closest
 boundary point inside an epsilon ball.
 
-```mermaid
-flowchart TB
-    X["Clean sample x"] --> M["Compute logit margin"]
-    M --> B["Search nearest boundary point x_hat"]
-    B --> N["Normalize by input-gradient dual norm"]
-    N --> L["ADM loss"]
-```
-
 ### GMM Prototype Replay
 
 For each previous adversarial domain, FS-CAT extracts penultimate features and
 fits class-wise Gaussian mixture prototypes. During later stages, replayed
 pseudo-features are sent directly to the classifier, avoiding raw-image storage.
 
-```mermaid
-flowchart LR
-    A["Past adversarial data"] --> B["Feature extractor"]
-    B --> C["Class-wise features"]
-    C --> D["GMM with lambda1 components"]
-    D --> E["Pseudo-features"]
-    E --> F["Classifier replay loss"]
-```
-
 ### Multi-Domain Balanced Loss
 
 MDB stabilizes continual learning by reducing the variance of replay losses
 across previously seen adversarial domains.
 
-```mermaid
-flowchart LR
-    A["Replay loss: domain 1"] --> D["Domain-loss variance"]
-    B["Replay loss: domain 2"] --> D
-    C["Replay loss: domain k-1"] --> D
-    D --> E["sum replay loss - lambda2 * variance"]
-    E --> F["Balanced update"]
-```
+<p align="center">
+  <img src="assets/figures/figure2_framework.png" alt="FS-CAT framework with ADM, GMM replay, and MDB" width="920">
+</p>
 
 ## Environment Setups
 
@@ -95,16 +67,6 @@ adversarial examples.
 Please fill the empty paths in the YAML config files before running. Each path
 should point to a `torch.save` file such as `FGSM.pth`, `PGD.pth`, `CW.pth`,
 `AA.pth`, or `Df.pth`.
-
-```mermaid
-flowchart TB
-    R["/dataset"] --> I["ImageNet1K"]
-    R --> C["CIFAR100"]
-    I --> IT["clean_train.pth / clean_val.pth"]
-    I --> IA["data: FGSM.pth, PGD.pth, CW.pth, AA.pth, Df.pth"]
-    C --> CT["clean_train.pth / clean_val.pth"]
-    C --> CA["data: FGSM.pth, PGD.pth, CW.pth, AA.pth, Df.pth"]
-```
 
 Example directory layout:
 
@@ -183,6 +145,14 @@ python -m fs_lifelong_at.main --config configs/fs_cat_imagenet10shot.yaml --stag
 | Short attack sequence | `[FGSM, PGD, CW, AA, Df]` |
 | Long attack sequence | `[FGSM, BIM, PGD, SA, BS, MCG, DIM]` |
 
+<p align="center">
+  <img src="assets/figures/table5_ablation.png" alt="FS-CAT component ablation table" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/figures/figure5_kshot.png" alt="FS-CAT k-shot robustness comparison" width="520">
+</p>
+
 ## Code Structure
 
 ```text
@@ -196,18 +166,6 @@ fs_lifelong_at/
 |-- models.py                   # ResNet feature/classifier wrapper
 |-- trainer.py                  # continual training pipeline
 `-- main.py                     # entrypoint
-```
-
-```mermaid
-flowchart LR
-    A["main.py"] --> B["config YAML"]
-    A --> C["build model"]
-    A --> D["build loaders"]
-    C --> E["trainer.py"]
-    D --> E
-    E --> F["ADM pretraining"]
-    E --> G["GMM replay"]
-    E --> H["MDB continual update"]
 ```
 
 ## Citation
