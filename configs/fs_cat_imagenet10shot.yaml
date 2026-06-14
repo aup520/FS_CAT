@@ -1,0 +1,78 @@
+seed: 1
+device: cuda
+output_dir: outputs/fs_cat_imagenet10shot
+
+data:
+  name: imagenet1k
+  num_classes: 1000
+  image_size: 224
+  k_shot: 10
+  augmentation:
+    enabled: true
+    random_crop_padding: 4
+    horizontal_flip_prob: 0.5
+  clean_train_path: ""
+  clean_val_path: ""
+  attack_sequence: [FGSM, PGD, CW, AA, Df]
+  long_attack_sequence: [FGSM, BIM, PGD, SA, BS, MCG, DIM]
+  adversarial_train_paths:
+    FGSM: ""
+    PGD: ""
+    CW: ""
+    AA: ""
+    Df: ""
+  adversarial_eval_paths:
+    FGSM: ""
+    PGD: ""
+    CW: ""
+    AA: ""
+    Df: ""
+  attack_params:
+    FGSM: {epsilon: 0.03137254901960784}
+    PGD: {epsilon: 0.03137254901960784, step_size: 0.00784313725490196, iterations: 20}
+    CW: {steps: 1000, learning_rate: 0.01}
+    DIM: {epsilon: 0.06274509803921569, steps: 10, momentum: 1.0}
+    Df: {iterations: 50, overshoot: 0.02}
+    AA: {epsilon: 0.03137254901960784}
+    SA: {epsilon: 0.05, queries: 10000}
+    BS: {queries: 1000, sparsity: 0.002}
+    MCG: {queries: 10000, epsilon: 0.0325}
+    cross_norm: {linf_steps: 5, l2_steps: 5, l1_steps: 15, linf_epsilon: 0.03137254901960784, l2_epsilon: 0.5, l1_epsilon: 12}
+
+model:
+  backbone: resnet50
+  pretrained: false
+
+training:
+  batch_size: 64
+  num_workers: 4
+  optimizer: adam
+  learning_rate: 1.0e-3
+  weight_decay: 0.0
+  pretrain_epochs: 0
+  epochs_per_attack: 1
+  current_loss_weight: 1.0
+  replay_loss_weight: 1.0
+  save_checkpoints: true
+
+adm:
+  enabled: true
+  weight: 1.0
+  p_norm: inf
+  epsilon: 0.03137254901960784
+  step_size: 0.00784313725490196
+  steps: 20
+  grad_eps: 1.0e-12
+
+replay:
+  enabled: true
+  lambda1_components: 4
+  em_steps: 8
+  covariance_eps: 1.0e-5
+  samples_per_component: 1
+  max_fit_batches: null
+
+mdb:
+  enabled: true
+  lambda2: 0.1
+  rho: 0.05
