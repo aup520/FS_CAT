@@ -1,6 +1,5 @@
 # Robustness Under Data Scarcity: Few-Shot Continual Adversarial Training for Evolving Threats(CVPR2026)
 
-[project](#) [paper](#)
 
 ## Overview
 
