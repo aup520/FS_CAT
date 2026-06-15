@@ -1,4 +1,4 @@
-# Robustness Under Data Scarcity: Few-Shot Continual Adversarial Training for Evolving Threats
+# Robustness Under Data Scarcity: Few-Shot Continual Adversarial Training for Evolving Threats(CVPR2026)
 
 [project](#) [paper](#)
 
@@ -14,8 +14,6 @@ real-world scenarios.
 This repository provides a local reproduction pipeline for FS-CAT. The method
 contains three key components: Adversarial Margin loss, GMM Prototype Replay,
 and Multi-Domain Balanced loss.
-
-The figures below are screenshots cropped from the FS-CAT paper PDF.
 
 <p align="center">
   <img src="assets/figures/figure1_performance.png" alt="FS-CAT performance comparison" width="520">
